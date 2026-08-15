@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Welcome</title>
+    <style>
+      *{
+          margin:0;
+          padding:0;
+          box-sizing:border-box;
+      }
+      body {
+          background: url("./photos/test.jpg") no-repeat center;
+          background-size: cover;
+          margin: 0;
+          min-height: 100vh;
+          overflow-x:hidden;
+       }
+       input {
+          border: none;
+          outline: none;
+          font-size: 16px;
+          caret-color: #0066ff;
+          font-family: "Microsoft YaHei", sans-serif;
+        }
+       #searchBtn {
+         transition: transform 0.12s linear;
+       }
+       #searchBtn:active {
+         transform: scale(0.94);
+       }
+       .shortcut-wrap{
+           margin-top:40px;
+           display:flex;
+           gap:24px;
+           justify-content:center;
+           flex-wrap:wrap;
+       }
+       .shortcut-item{
+           width:80px;
+           text-align:center;
+           cursor:pointer;
+           user-select: none;
+           transition: transform 0.15s linear;
+       }
+       .shortcut-item:active{
+           transform:scale(0.92);
+       }
+       .shortcut-icon{
+           width:54px;
+           height:54px;
+           border-radius:14px;
+           background:#ffffffdd;
+           box-shadow:0 2px 8px rgba(0,0,0,0.25);
+           display:flex;
+           justify-content:center;
+           align-items:center;
+           margin:0 auto 6px;
+           transition: opacity 0.1s;
+       }
+       .shortcut-icon img{
+           width:32px;
+           height:32px;
+           object-fit:contain;
+           user-select: none;
+           pointer-events: none;
+       }
+       .shortcut-name{
+           font-size:14px;
+           color:#fff;
+           text-shadow:0 1px 3px #00000070;
+           user-select: none;
+       }
+
+       .app-launch-overlay{
+           position:fixed;
+           z-index:9999;
+           border-radius:14px;
+           background:#ffffffdd;
+           pointer-events:none;
+           overflow:hidden;
+           transition: all 0.35s cubic-bezier(0.2, 0, 0.2, 1);
+       }
+       .app-launch-overlay.fullscreen{
+           border-radius:0;
+           top: 0 !important;
+           left: 0 !important;
+           width:100vw !important;
+           height:100vh !important;
+       }
+
+       .overlay-icon{
+           position:fixed;
+           width:32px;
+           height:32px;
+           object-fit:contain;
+           z-index:10000;
+           transition: transform 0.35s cubic-bezier(0.2, 0, 0.2, 1),
+                       opacity 0.2s ease 0.5s;
+       }
+    </style>
+</head>
+<body>
+    <div style="width: 100%;min-height: 400px;display: flex;flex-direction:column;justify-content: center;align-items: center;padding:20px 10px;">
+      <div style="background:#FCFCFC;width: 100%;max-width:800px;border-radius:50px;box-shadow:0 3px 10px rgba(0,0,0,0.45);display:flex;align-items:center;padding:6px 6px;">
+            <input id="myInput" type="text" style="flex:1;padding:10px 14px;border-radius:42px;" placeholder="请输入要搜索的内容">
+            <div id="searchBtn" style="background:#00b5ff;min-width:86px;border-radius:42px;display:flex;justify-content:center;align-items:center;cursor:pointer;user-select:none;margin-left:8px;padding:10px 12px;">
+              <p style="margin:0;color:white;font-size:16px;user-select:none;">搜索</p>
+            </div>
+      </div>
+        <div class="shortcut-wrap">
+            <div class="shortcut-item" data-href="https://www.bilibili.com">
+                <div class="shortcut-icon">
+                    <img src="./photos/bilbil.svg" alt="" draggable="false">
+                </div>
+                <div class="shortcut-name">B站</div>
+            </div>
+            <div class="shortcut-item" data-href="https://github.com">
+                <div class="shortcut-icon">
+                    <img src="./photos/github.svg" alt="" draggable="false">
+                </div>
+                <div class="shortcut-name">Github</div>
+            </div>
+            <div class="shortcut-item" data-href="https://powerpoint.cloud.microsoft/zh-hans/">
+                <div class="shortcut-icon">
+                    <img src="./photos/powerpoint_16x1.svg" alt="" style="width:60px;height:60px;" draggable="false">
+                </div>
+                <div class="shortcut-name">PPT</div>
+            </div>
+            <div class="shortcut-item" data-href="https://word.cloud.microsoft/zh-hans/">
+                <div class="shortcut-icon">
+                    <img src="./photos/word_16x1.svg" alt="" draggable="false">
+                </div>
+                <div class="shortcut-name">word</div>
+            </div>
+            <div class="shortcut-item" data-href="https://excel.cloud.microsoft/zh-hans/">
+                <div class="shortcut-icon">
+                    <img src="./photos/excel_16x1.svg" alt="" draggable="false">
+                </div>
+                <div class="shortcut-name">Excel</div>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const inputDom = document.getElementById('myInput');
+    const searchBtn = document.getElementById('searchBtn');
+    const items = document.querySelectorAll('.shortcut-item');
+
+    items.forEach(item=>{
+        item.addEventListener('click',function(){
+            const url = this.dataset.href;
+            const iconBox = this.querySelector('.shortcut-icon');
+            const iconImg = iconBox.querySelector('img');
+            const rect = iconBox.getBoundingClientRect();
+
+            iconBox.style.opacity = '0';
+
+            const overlay = document.createElement('div');
+            overlay.className = 'app-launch-overlay';
+            overlay.style.top = rect.top + 'px';
+            overlay.style.left = rect.left + 'px';
+            overlay.style.width = rect.width + 'px';
+            overlay.style.height = rect.height + 'px';
+            document.body.appendChild(overlay);
+
+            const startX = rect.left + rect.width / 2;
+            const startY = rect.top + rect.height / 2;
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            const dx = centerX - startX;
+            const dy = centerY - startY;
+
+            const cloneImg = document.createElement('img');
+            cloneImg.className = 'overlay-icon';
+            cloneImg.src = iconImg.src;
+            cloneImg.style.left = startX + 'px';
+            cloneImg.style.top = startY + 'px';
+            cloneImg.style.transform = 'translate(-50%, -50%) scale(1)';
+            cloneImg.style.opacity = '1';
+            document.body.appendChild(cloneImg);
+
+            requestAnimationFrame(()=>{
+                requestAnimationFrame(()=>{
+                    overlay.classList.add('fullscreen');
+                    cloneImg.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(1.8)`;
+                    cloneImg.style.opacity = '0';
+                })
+            })
+
+            setTimeout(()=>{
+                window.open(url,'_blank');
+                overlay.remove();
+                cloneImg.remove();
+                iconBox.style.opacity = '1';
+            },800);
+        })
+    })
+
+    inputDom.addEventListener('keydown',function(e){
+      if(e.key === 'Enter'){
+        let content = inputDom.value.trim();
+        if(content){
+            window.location.href = "https://cn.bing.com/search?q="+encodeURIComponent(content);
+        }
+      }
+    })
+    searchBtn.addEventListener('click',()=>{
+        let content = inputDom.value.trim();
+        if(content){
+            window.location.href = "https://cn.bing.com/search?q="+encodeURIComponent(content);
+        }
+    })
+</script>
+</body>
+</html>
