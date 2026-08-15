@@ -11,11 +11,17 @@ headers_img = {
     "Referer": "https://cn.bing.com/"
 }
 
-# =========配置========
-ESP_IP = "192.168.2.102"
-API_TOKEN = "wyz123456"
+# =========【请使用者自行修改下面配置】========
+ESP_IP = "填写ESP32局域网IP"
+API_TOKEN = "填写你的通信密钥"
 DOWNLOAD_LOCAL = True   # True=保存图片到本地photos文件夹；False=跳过下载，只推送url给ESP32
-# =====================
+# ============================================
+
+# 简单校验配置是否已经修改
+if ESP_IP == "填写ESP32局域网IP" or API_TOKEN == "填写你的通信密钥":
+    print("❌请先修改脚本顶部配置：ESP_IP 和 API_TOKEN！")
+    exit(1)
+
 
 try:
     html_url = "https://cn.bing.com/"
@@ -76,7 +82,7 @@ try:
         "token": API_TOKEN,
         "url": img_url
     }
-    print(f"\n准备请求ESP32: http://{ESP_IP}/seturl , params={params_data}")
+    print(f"\n准备请求ESP32: http://{ESP_IP}/seturl")
     resp = requests.get(f"http://{ESP_IP}/seturl", params=params_data, timeout=10)
     print("ESP32返回：", resp.text)
 
